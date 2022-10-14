@@ -27,16 +27,30 @@ int main(int argc, char *argv[]) {
 //    //print_list(l);
 //    free_list(l);
 
+    int disp = 0;
+    if (argc > 1 && argv[2] != NULL) {
+        if (strcmp(argv[2], "--display") == 0) {
+            disp = 1;
+        }
+    }
+
+    char* filename = argv[1];
     printf("///// Méthode 1 /////\n");
     struct list* l;
-    l = load_file("../data/large.txt");
-    //print_list(l);
+    l = load_file(filename);
+    if (disp) {
+        print_list(l);
+    }
     free_list(l);
+
+    printf("\n");
 
     printf("///// Méthode 2 /////\n");
     struct llist* ll;
-    ll = lists_from_file("../data/large.txt");
-    //print_lists(ll);
+    ll = lists_from_file(filename);
+    if (disp) {
+        print_lists(ll);
+    }
     free_llist(ll);
     return 0;
 }
