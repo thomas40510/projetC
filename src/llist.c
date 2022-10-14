@@ -36,25 +36,38 @@ struct llist* new_llist(){
     return llst;
 }
 
+
+void free_lcell(struct lcell* lc){
+    /*
+     * Free a lcell
+     */
+    if (lc == NULL){
+        return;
+    }
+    free_list(lc->start);
+    free(lc);
+}
+
 void free_llist(struct llist* lst) {
-    //TODO : fix this
-    struct lcell *cur;
+    /*
+     * free lcells content and lcells themselves
+     * then free the llist
+     */
+    struct lcell* cur;
+    struct lcell* tmp;
     // Empty list
     if (lst == NULL) {
         return;
     }
-    // Free each cell one by one
+    // Free each lcell one by one
     cur = lst->head;
     while (cur != NULL) {
-        free_lcell(cur);
+        tmp = cur;
         cur = cur->next;
+        free_lcell(tmp);
     }
+    lst->head = NULL;
     free(lst);
-}
-
-void free_lcell(struct lcell* lc){
-    free_list(lc->start);
-    free(lc);
 }
 
 /* lcell addition
@@ -164,8 +177,7 @@ struct llist* lists_from_file(char* file_name){
         exit(1);
     }
     printf("/?/[Log/I]: Loading file...\n");
-    struct timeval t0, tf;
-    gettimeofday(&t0, NULL);
+    int64_t t0 = currentTimeMillis();
     while (fgets(line, 101, f) != NULL) {
         struct list *cur = new_list();
         c = make_cell_from_line(line);
@@ -186,9 +198,8 @@ struct llist* lists_from_file(char* file_name){
         nb_elems++;
     }
     fclose(f);
-    gettimeofday(&tf, NULL);
-    int64_t dt = ((tf.tv_sec)* 1000 + (tf.tv_usec) / 1000) - ((t0.tv_sec) * 1000 + (t0.tv_usec) / 1000);
-    printf("/?/[Log/I]: loaded %d elements from file %s in %lu millis\n", nb_elems, file_name, dt);
+    int64_t dt = currentTimeMillis() - t0;
+    printf("/?/[Log/I]: loaded %d elements from file %s in %lld millis\n", nb_elems, file_name, dt);
     return llst;
 
 }

@@ -1,5 +1,19 @@
 #include "list.h"
 #include <string.h>
+#include <sys/time.h>
+
+/* Utility functions
+ * ================= */
+int64_t currentTimeMillis() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    int64_t res = tv.tv_usec;
+    /* Convert from micro seconds (10^-6) to milliseconds (10^-3) */
+    res /= 1000;
+    /* Adds the seconds (10^0) after converting them to milliseconds (10^-3) */
+    res += (tv.tv_sec * 1000);
+    return res;
+}
 
 /* Construction/Destruction
 ======================== */
@@ -28,9 +42,9 @@ static void free_cells(struct list *lst) {
         tmp = cur;
         cur = cur->next;
          //If dynamically allocated!
-         free(tmp->fname);
-         free(tmp->lname);
-         free(tmp->zip);
+         //free(tmp->fname);
+         //free(tmp->lname);
+         //free(tmp->zip);
         free(tmp);
     }
     lst->head = NULL;
@@ -161,13 +175,15 @@ struct list *load_file(char *file_name) {
         return NULL;
     }
     printf("/?/[Log/I]: Loading file...\n");
+    int64_t t0 = currentTimeMillis();
     while (fgets(line, 101, f) != NULL) {
         c = make_cell_from_line(line);
         insert(lst, c);
         nb_elems++;
     }
     fclose(f);
-    printf("/?/[Log/I]: loaded %d elements from file %s\n", nb_elems, file_name);
+    int64_t dt = currentTimeMillis() - t0;
+    printf("/?/[Log/I]: loaded %d elements from file %s in %lld millis\n", nb_elems, file_name, dt);
     return lst;
 }
 

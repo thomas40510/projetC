@@ -5,6 +5,7 @@
 #define NAME_LENGTH 40
 #define ZIP_LENGTH 10
 
+
 struct list {
     struct cell* head;
 };
@@ -50,3 +51,6 @@ void insert(struct list* lst, struct cell* c);
 
 /* Loads the contents of a file in a sorted list */
 struct list* load_file(char* file_name);
+
+/* Gets current time in milliseconds */
+int64_t currentTimeMillis();
