@@ -28,8 +28,7 @@ int main(int argc, char *argv[]) {
 //    free_list(l);
 
     struct llist* ll;
-    ll = lists_from_file("../data/medium.txt");
-    print_lists(ll);
-    free_llist(ll);
+    ll = lists_from_file("../data/large.txt");
+    //print_lists(ll);
     return 0;
 }

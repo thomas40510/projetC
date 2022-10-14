@@ -179,6 +179,10 @@ int compare_cells(struct cell *c1, struct cell *c2) {
      * Compare two cells by their last name
      * if last name is identical, compare by first name
      */
+    if (c1 == NULL || c2 == NULL) {
+        exit(1);
+    }
+
     int cmp = strcmp(c1->lname, c2->lname);
     if (cmp == 0) {
         cmp = strcmp(c1->fname, c2->fname);
@@ -191,7 +195,7 @@ void insert(struct list *lst, struct cell *c) {
      * Insert a cell in a sorted list
      */
     struct cell *cur, *prev;
-    if (lst == NULL) {
+    if (lst == NULL || c == NULL) {
         return;
     }
     // Empty list

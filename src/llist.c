@@ -1,12 +1,20 @@
 #include "llist.h"
+#include <time.h>
 
 /* Utility functions
  * ================= */
 
 struct lcell* in_lists(struct llist* lst, char letter) {
+/*
+     * Return the lcell in lst with letter as first letter
+     * Return 0 if not found
+     */
     struct lcell* cur = lst->head;
+    if (lst == NULL) {
+        exit(1);
+    }
     while (cur != NULL) {
-        if (strcmp(cur->letter, letter) == 0) {
+        if (strcmp(&cur->letter, &letter) == 0) {
             return cur;
         }
         cur = cur->next;
@@ -33,6 +41,7 @@ void free_llist(struct llist* lst){
     struct lcell* tmp;
     // Empty list
     if (lst == NULL){
+        printf("/?/Log[i] : Freeing empty list");
         return;
     }
     // Free each cell one by one
@@ -47,6 +56,10 @@ void free_llist(struct llist* lst){
 }
 
 void free_lcell(struct lcell* lc){
+    if (lc == NULL){
+        printf("/?/Log[i] : Freeing empty cell");
+        return;
+    }
     free_list(lc->start);
     free(lc);
 }
@@ -54,7 +67,7 @@ void free_lcell(struct lcell* lc){
 /* lcell addition
 ======================== */
 
-struct lcell* make_lcell(char* letter, struct list* start){
+struct lcell* make_lcell(char letter, struct list* start){
     struct lcell* lc = (struct lcell*) malloc(sizeof(struct lcell));
 
     if (lc == NULL){
@@ -72,11 +85,19 @@ struct lcell* make_lcell(char* letter, struct list* start){
 ======================== */
 
 int compare_lcell(struct lcell* lc1, struct lcell* lc2){
-    return strcmp(lc1->letter, lc2->letter);
+    return strcmp(&lc1->letter, &lc2->letter);
 }
 
 void linsert(struct llist* lst, struct lcell* lc){
     struct lcell *cur, *prev;
+    if (lst == NULL){
+        printf("/?/Log[i] : Inserting in empty list");
+        return;
+    }
+    if (lc == NULL){
+        printf("/?/Log[i] : Inserting empty cell");
+        return;
+    }
 
     //empty llist
     if (lst->head == NULL){
@@ -111,15 +132,18 @@ void linsert(struct llist* lst, struct lcell* lc){
 ======================== */
 
 struct llist* make_lists(struct list* lst){
+    if (lst == NULL){
+        exit(1);
+    }
     struct lcell* lc;
     struct llist* llst = new_llist();
     struct cell* cur = lst->head;
-    char* letter = (char*) malloc(sizeof(char));
+    char letter;
     struct list* start = new_list();
 
     while(cur != NULL){
-        if (cur->fname[0] != letter[0]){
-            letter[0] = cur->fname[0];
+        if (cur->fname[0] != letter){
+            letter = cur->fname[0];
             lc = make_lcell(letter, start);
             linsert(llst, lc);
         }
@@ -131,6 +155,10 @@ struct llist* make_lists(struct list* lst){
 
 struct llist* lists_from_file(char* file_name){
     struct llist* llst = new_llist();
+    if (file_name == NULL){
+        printf("/?/Log[i] : Attempting to read from empty file");
+        return NULL;
+    }
 
     FILE *f;
     char line[100];
@@ -143,15 +171,15 @@ struct llist* lists_from_file(char* file_name){
         exit(1);
     }
     printf("/?/[Log/I]: Loading file...\n");
+    long tbegin = time(NULL);
     while (fgets(line, 101, f) != NULL) {
         struct list *cur = new_list();
         c = make_cell_from_line(line);
-        printf("/?/[Log/I]: %s\n", line);
         insert(cur, c);
         // letter in lists ?
         if (in_lists(llst, c->lname[0]) == 0){
-            printf("/?/[Log/I]: New letter %c\n", c->lname[0]);
-            struct lcell* lc = make_lcell(&c->lname[0], cur);
+            char letter = c->lname[0];
+            struct lcell* lc = make_lcell(letter, cur);
             linsert(llst, lc);
 
         } else {
@@ -165,7 +193,8 @@ struct llist* lists_from_file(char* file_name){
 //    free_list(cur);
 //    free_list(tmp);
     fclose(f);
-    printf("/?/[Log/I]: loaded %d elements from file %s\n", nb_elems, file_name);
+    long tend = time(NULL);
+    printf("/?/[Log/I]: loaded %d elements from file %s in %li seconds\n", nb_elems, file_name, (tend - tbegin));
     return llst;
 
 }
@@ -175,11 +204,19 @@ struct llist* lists_from_file(char* file_name){
  * ======== */
 
 void print_lcell(struct lcell* lc){
-    printf("Letter: %s", lc->letter);
+    if (lc == NULL){
+        printf("/?/Log[i] : Printing empty cell");
+        return;
+    }
+    printf("Letter: %c", lc->letter);
     print_list(lc->start);
 }
 
 void print_lcells(struct llist* lst){
+    if (lst == NULL){
+        printf("/?/Log[i] : Printing empty list");
+        return;
+    }
     struct lcell* cur = lst->head;
     while (cur != NULL){
         print_lcell(cur);
@@ -188,9 +225,12 @@ void print_lcells(struct llist* lst){
 }
 
 void print_lists(struct llist* lst){
+    if (lst == NULL){
+        printf("/?/Log[i] : Attempting to print an empty list");
+        return;
+    }
     struct lcell* cur = lst->head;
     while (cur != NULL){
-        printf("Letter: %s\n", cur->letter);
         print_list(cur->start);
         cur = cur->next;
     }

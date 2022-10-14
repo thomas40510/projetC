@@ -5,7 +5,7 @@ struct llist {
 };
 
 struct lcell {
-    char* letter;
+    char letter;
     struct list* start;
     struct lcell* next;
 };
@@ -16,7 +16,7 @@ void free_lcell(struct lcell* lc);
 
 struct llist* new_llist();
 
-struct lcell* make_lcell(char* letter, struct list* start);
+struct lcell* make_lcell(char letter, struct list* start);
 
 int compare_lcells(struct lcell* lc1, struct lcell* lc2);
 
