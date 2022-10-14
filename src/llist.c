@@ -1,5 +1,5 @@
 #include "llist.h"
-#include <time.h>
+#include <sys/time.h>
 
 /* Utility functions
  * ================= */
@@ -14,7 +14,7 @@ struct lcell* in_lists(struct llist* lst, char letter) {
         exit(1);
     }
     while (cur != NULL) {
-        if (strcmp(&cur->letter, &letter) == 0) {
+        if (cur->letter == letter) {
             return cur;
         }
         cur = cur->next;
@@ -36,30 +36,23 @@ struct llist* new_llist(){
     return llst;
 }
 
-void free_llist(struct llist* lst){
-    struct lcell* cur;
-    struct lcell* tmp;
+void free_llist(struct llist* lst) {
+    //TODO : fix this
+    struct lcell *cur;
     // Empty list
-    if (lst == NULL){
-        printf("/?/Log[i] : Freeing empty list");
+    if (lst == NULL) {
         return;
     }
     // Free each cell one by one
     cur = lst->head;
-    while (cur != NULL){
-        tmp = cur;
+    while (cur != NULL) {
+        free_lcell(cur);
         cur = cur->next;
-        free_list(tmp->start);
-        free(tmp);
     }
-    lst->head = NULL;
+    free(lst);
 }
 
 void free_lcell(struct lcell* lc){
-    if (lc == NULL){
-        printf("/?/Log[i] : Freeing empty cell");
-        return;
-    }
     free_list(lc->start);
     free(lc);
 }
@@ -171,7 +164,8 @@ struct llist* lists_from_file(char* file_name){
         exit(1);
     }
     printf("/?/[Log/I]: Loading file...\n");
-    long tbegin = time(NULL);
+    struct timeval t0, tf;
+    gettimeofday(&t0, NULL);
     while (fgets(line, 101, f) != NULL) {
         struct list *cur = new_list();
         c = make_cell_from_line(line);
@@ -184,17 +178,17 @@ struct llist* lists_from_file(char* file_name){
 
         } else {
             struct lcell* lc = in_lists(llst, c->lname[0]);
-            insert(lc->start, c);
+            struct list* lst = lc->start;
+            insert(lst, c);
+            lc -> start = lst;
 
         }
-        //free_list(cur);
         nb_elems++;
     }
-//    free_list(cur);
-//    free_list(tmp);
     fclose(f);
-    long tend = time(NULL);
-    printf("/?/[Log/I]: loaded %d elements from file %s in %li seconds\n", nb_elems, file_name, (tend - tbegin));
+    gettimeofday(&tf, NULL);
+    int64_t dt = ((tf.tv_sec)* 1000 + (tf.tv_usec) / 1000) - ((t0.tv_sec) * 1000 + (t0.tv_usec) / 1000);
+    printf("/?/[Log/I]: loaded %d elements from file %s in %lu millis\n", nb_elems, file_name, dt);
     return llst;
 
 }

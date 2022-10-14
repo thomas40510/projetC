@@ -30,5 +30,6 @@ int main(int argc, char *argv[]) {
     struct llist* ll;
     ll = lists_from_file("../data/large.txt");
     //print_lists(ll);
+   //free_llist(ll);
     return 0;
 }
