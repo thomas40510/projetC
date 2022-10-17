@@ -3,6 +3,20 @@
 #include "llist.h"
 
 int main(int argc, char *argv[]) {
+    /*
+     * ===============================
+     * Système d'annuaire alphabétique
+     * ===============================
+     * Projet C 2022
+     *
+     * Auteur: Thomas Prévost (CSN 2024) [github.com/thomas40510]
+     *
+     * Modules:
+     * - list.c > création d'un annuaire par liste chaînée
+     * - llist.c > création d'un annuaire par liste chaînée de listes chaînées (structure optimisée)
+     */
+
+    /* Exemples d'usages (décommenter pour tester) */
 //    struct list* l;
 //    l = new_list();
 //    print_list(l);
@@ -27,15 +41,20 @@ int main(int argc, char *argv[]) {
 //    //print_list(l);
 //    free_list(l);
 
+    /*
+     * Partie principale : fonctionnement en ligne de commande
+     */
+
     int disp = 0;
     if (argc > 1 && argv[2] != NULL) {
-        if (strcmp(argv[2], "--display") == 0) {
+        /* Présence d'un 2nd argument */
+        if (strcmp(argv[2], "--display") == 0) { /* Affichage des données */
             disp = 1;
         }
     }
 
     char* filename = argv[1];
-    printf("///// Méthode 1 /////\n");
+    printf("///// Méthode 1 /////\n"); // méthode non optimisée
     struct list* l;
     l = load_file(filename);
     if (disp) {
@@ -45,7 +64,7 @@ int main(int argc, char *argv[]) {
 
     printf("\n");
 
-    printf("///// Méthode 2 /////\n");
+    printf("///// Méthode 2 /////\n"); // méthode optimisée
     struct llist* ll;
     ll = lists_from_file(filename);
     if (disp) {

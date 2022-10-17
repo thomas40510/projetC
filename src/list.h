@@ -1,3 +1,11 @@
+/*
+ * File list.h
+ * -----------
+ * Author: Thomas Prévost (CSN 2024) [github.com/thomas40510]
+ *
+ * Liste chaînée
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

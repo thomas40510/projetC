@@ -1,3 +1,11 @@
+/*
+ * Module llist
+ * ------------
+ * Author: Thomas Prévost (CSN 2024) [github.com/thomas40510]
+ *
+ * Liste chaînée de listes chaînées
+ */
+
 #include "llist.h"
 #include <sys/time.h>
 
@@ -5,9 +13,9 @@
  * ================= */
 
 struct lcell* in_lists(struct llist* lst, char letter) {
-/*
-     * Return the lcell in lst with letter as first letter
-     * Return 0 if not found
+    /*
+     * Check if a lcell with the given letter is in the llist
+     * Returns the lcell if found, 0 otherwise
      */
     struct lcell* cur = lst->head;
     if (lst == NULL) {
@@ -26,6 +34,9 @@ struct lcell* in_lists(struct llist* lst, char letter) {
 ======================== */
 
 struct llist* new_llist(){
+    /*
+     * Allocate memory for a llist structure and returns the pointer
+     */
     struct llist* llst = (struct llist*) malloc(sizeof(struct llist));
 
     if (llst == NULL){
@@ -74,6 +85,9 @@ void free_llist(struct llist* lst) {
 ======================== */
 
 struct lcell* make_lcell(char letter, struct list* start){
+    /*
+     * Allocate memory for a lcell structure and returns the pointer
+     */
     struct lcell* lc = (struct lcell*) malloc(sizeof(struct lcell));
 
     if (lc == NULL){
@@ -91,34 +105,40 @@ struct lcell* make_lcell(char letter, struct list* start){
 ======================== */
 
 int compare_lcell(struct lcell* lc1, struct lcell* lc2){
+    /*
+     * Compare two lcells by their letter and returns the result
+     */
     return strcmp(&lc1->letter, &lc2->letter);
 }
 
 void linsert(struct llist* lst, struct lcell* lc){
+    /*
+     * Insert a lcell in a sorted llist (4 possible cases)
+     */
     struct lcell *cur, *prev;
-    if (lst == NULL){
+    if (lst == NULL){ // Empty list
         printf("/?/Log[i] : Inserting in empty list");
         return;
     }
-    if (lc == NULL){
+    if (lc == NULL){ // Empty lcell
         printf("/?/Log[i] : Inserting empty cell");
         return;
     }
 
-    //empty llist
+    // 1: Empty llist
     if (lst->head == NULL){
         lst->head = lc;
         return;
     }
 
-    //insert at the beginning
+    // 2: Insert at the beginning
     if (compare_lcell(lc, lst->head) < 0){
         lc->next  = lst->head;
         lst->head = lc;
         return;
     }
 
-    //insert in the middle`
+    // 3: Insert in the middle`
     cur = lst->head;
     prev = lst->head;
     while(cur != NULL){
@@ -130,7 +150,7 @@ void linsert(struct llist* lst, struct lcell* lc){
         prev = cur;
         cur = cur->next;
     }
-    //insert at the end
+    // 4: Insert at the end
     prev->next = lc;
 }
 
@@ -138,7 +158,11 @@ void linsert(struct llist* lst, struct lcell* lc){
 ======================== */
 
 struct llist* make_lists(struct list* lst){
-    if (lst == NULL){
+    /*
+     * Create a llist from a sorted list
+     * Returns the pointer to the llist
+     */
+    if (lst == NULL){ // Empty list
         exit(1);
     }
     struct lcell* lc;
@@ -147,6 +171,8 @@ struct llist* make_lists(struct list* lst){
     char letter;
     struct list* start = new_list();
 
+    // Read each element of the list,
+    // create one sublist and one lcell per letter and insert them in the llist
     while(cur != NULL){
         if (cur->fname[0] != letter){
             letter = cur->fname[0];
@@ -160,9 +186,13 @@ struct llist* make_lists(struct list* lst){
 }
 
 struct llist* lists_from_file(char* file_name){
+    /*
+     * Create a llist from a file
+     * Returns the pointer to the llist
+     */
     struct llist* llst;
-    if (file_name == NULL){
-        printf("/?/Log[i] : Attempting to read from empty file");
+    if (file_name == NULL){ // file_name is NULL
+        printf("/?/Log[i] : Attempting to read null file");
         return NULL;
     }
 
@@ -171,7 +201,7 @@ struct llist* lists_from_file(char* file_name){
     struct cell *c;
     int nb_elems = 0;
     f = fopen(file_name, "r");
-    if (f == NULL) {
+    if (f == NULL) { // cannot read file
         printf("/!!/[Log/E]: cannot open file %s", file_name);
         fclose(f);
         exit(1);
@@ -183,13 +213,13 @@ struct llist* lists_from_file(char* file_name){
         struct list *cur;
         c = make_cell_from_line(line);
         // letter in lists ?
-        if (in_lists(llst, c->lname[0]) == 0){
+        if (in_lists(llst, c->lname[0]) == 0){ // no: create a new lcell and a new list, insert them in the llist
             char letter = c->lname[0];
             cur = new_list();
             insert(cur, c);
             struct lcell* lc = make_lcell(letter, cur);
             linsert(llst, lc);
-        } else {
+        } else { // yes: insert the cell in the corresponding list
             struct lcell* lc = in_lists(llst, c->lname[0]);
             struct list* lst = lc->start;
             insert(lst, c);
@@ -210,6 +240,9 @@ struct llist* lists_from_file(char* file_name){
  * ======== */
 
 void print_lcell(struct lcell* lc){
+    /*
+     * Print a lcell
+     */
     if (lc == NULL){
         printf("/?/Log[i] : Printing empty cell");
         return;
@@ -219,6 +252,9 @@ void print_lcell(struct lcell* lc){
 }
 
 void print_lcells(struct llist* lst){
+    /*
+     * Print all lcells of a llist
+     */
     if (lst == NULL){
         printf("/?/Log[i] : Printing empty list");
         return;
@@ -231,6 +267,9 @@ void print_lcells(struct llist* lst){
 }
 
 void print_lists(struct llist* lst){
+    /*
+     * Print all lists of a llist
+     */
     if (lst == NULL){
         printf("/?/Log[i] : Attempting to print an empty list");
         return;
