@@ -160,7 +160,7 @@ struct llist* make_lists(struct list* lst){
 }
 
 struct llist* lists_from_file(char* file_name){
-    struct llist* llst = new_llist();
+    struct llist* llst;
     if (file_name == NULL){
         printf("/?/Log[i] : Attempting to read from empty file");
         return NULL;
@@ -178,16 +178,17 @@ struct llist* lists_from_file(char* file_name){
     }
     printf("/?/[Log/I]: Loading file...\n");
     int64_t t0 = currentTimeMillis();
+    llst = new_llist();
     while (fgets(line, 101, f) != NULL) {
-        struct list *cur = new_list();
+        struct list *cur;
         c = make_cell_from_line(line);
-        insert(cur, c);
         // letter in lists ?
         if (in_lists(llst, c->lname[0]) == 0){
             char letter = c->lname[0];
+            cur = new_list();
+            insert(cur, c);
             struct lcell* lc = make_lcell(letter, cur);
             linsert(llst, lc);
-
         } else {
             struct lcell* lc = in_lists(llst, c->lname[0]);
             struct list* lst = lc->start;
