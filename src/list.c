@@ -42,11 +42,12 @@ static void free_cells(struct list *lst) {
         tmp = cur;
         cur = cur->next;
          //If dynamically allocated!
-         //free(tmp->fname);
+         free(tmp->fname);
          //free(tmp->lname);
          //free(tmp->zip);
         free(tmp);
     }
+    free(cur);
     lst->head = NULL;
 }
 
@@ -144,7 +145,6 @@ struct cell *make_cell_from_line(char *line) {
      * Make a cell from an input text line
      */
     char *fname, *lname, *zip;
-    struct cell *c;
 
     line = strtok(line, ";");
     char *tmp = (char*)malloc(strlen(line)+1);
@@ -154,8 +154,7 @@ struct cell *make_cell_from_line(char *line) {
     zip = strtok(NULL, ",");
 
     // Create the cell
-    c = make_cell(fname, lname, zip);
-    return c;
+    return make_cell(fname, lname, zip);
 }
 
 struct list *load_file(char *file_name) {
@@ -167,13 +166,13 @@ struct list *load_file(char *file_name) {
     struct cell *c;
     struct list *lst;
     int nb_elems = 0;
-    lst = new_list();
     f = fopen(file_name, "r");
     if (f == NULL) {
         printf("/!!/[Log/E]: cannot open file %s", file_name);
         fclose(f);
         return NULL;
     }
+    lst = new_list();
     printf("/?/[Log/I]: Loading file...\n");
     int64_t t0 = currentTimeMillis();
     while (fgets(line, 101, f) != NULL) {
