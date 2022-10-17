@@ -1,3 +1,11 @@
+/*
+ * Module list
+ * -----------
+ * Author: Thomas Prévost (CSN 2024) [github.com/thomas40510]
+ *
+ * Liste chaînée
+ */
+
 #include "list.h"
 #include <string.h>
 #include <sys/time.h>
@@ -19,6 +27,9 @@ int64_t currentTimeMillis() {
 ======================== */
 
 struct list* new_list() {
+    /*
+     * Allocate memory for a list structure and returns the pointer
+     */
     struct list* lst = (struct list*)malloc(sizeof(struct list));
 
     if (lst == NULL) {
@@ -30,10 +41,13 @@ struct list* new_list() {
 }
 
 static void free_cells(struct list *lst) {
+    /*
+     * Free memory assigned to cells of a list
+     */
     struct cell *cur;
     struct cell *tmp;
-    // Empty list
-    if (lst == NULL) {
+
+    if (lst == NULL) { //empty list
         return;
     }
     // Free each cell one by one
@@ -52,8 +66,11 @@ static void free_cells(struct list *lst) {
 }
 
 void free_list(struct list* lst) {
-    free_cells(lst);
-    free(lst);
+    /*
+     * Free memory assigned to a list and its cells
+     */
+    free_cells(lst); // cells of list
+    free(lst); // pointer to list
 }
 
 
@@ -167,7 +184,7 @@ struct list *load_file(char *file_name) {
     struct list *lst;
     int nb_elems = 0;
     f = fopen(file_name, "r");
-    if (f == NULL) {
+    if (f == NULL) { // failed to read file
         printf("/!!/[Log/E]: cannot open file %s", file_name);
         fclose(f);
         return NULL;
@@ -175,7 +192,7 @@ struct list *load_file(char *file_name) {
     lst = new_list();
     printf("/?/[Log/I]: Loading file...\n");
     int64_t t0 = currentTimeMillis();
-    while (fgets(line, 101, f) != NULL) {
+    while (fgets(line, 101, f) != NULL) { // create one cell per line and add it to the list
         c = make_cell_from_line(line);
         insert(lst, c);
         nb_elems++;
@@ -207,24 +224,24 @@ int compare_cells(struct cell *c1, struct cell *c2) {
 
 void insert(struct list *lst, struct cell *c) {
     /*
-     * Insert a cell in a sorted list
+     * Insert a cell at the right place in a sorted list (4 cases possible)
      */
     struct cell *cur, *prev;
     if (lst == NULL || c == NULL) {
         return;
     }
-    // Empty list
+    // 1: empty list
     if (lst->head == NULL) {
         lst->head = c;
         return;
     }
-    // Insert at the beginning
+    // 2: Insert at the beginning
     if (compare_cells(c, lst->head) < 0) {
         c->next = lst->head;
         lst->head = c;
         return;
     }
-    // Insert in the middle
+    // 3: Insert in the middle
     cur = lst->head;
     prev = lst->head;
     while (cur != NULL) {
@@ -236,6 +253,6 @@ void insert(struct list *lst, struct cell *c) {
         prev = cur;
         cur = cur->next;
     }
-    // Insert at the end
+    // 4: Insert at the end
     prev->next = c;
 }
