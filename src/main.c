@@ -45,6 +45,12 @@ int main(int argc, char *argv[]) {
      * Partie principale : fonctionnement en ligne de commande
      */
 
+    if(argc == 1){ // no file specified
+        printf("Erreur d'exécution.\n");
+        printf("Usage: ./annuaire <file_name> (--display)\n");
+        return 1;
+    }
+
     int disp = 0;
     if (argc > 1 && argv[2] != NULL) {
         /* Présence d'un 2nd argument */
