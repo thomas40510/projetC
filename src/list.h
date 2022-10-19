@@ -62,3 +62,5 @@ struct list* load_file(char* file_name);
 
 /* Gets current time in milliseconds */
 int64_t currentTimeMillis();
+
+int isConsistent(char* line);

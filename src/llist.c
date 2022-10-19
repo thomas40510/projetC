@@ -211,6 +211,10 @@ struct llist* lists_from_file(char* file_name){
     llst = new_llist();
     while (fgets(line, 101, f) != NULL) {
         struct list *cur;
+        if (!isConsistent(line)){
+            printf("/!!/[Log/E]: Inconsistent line %s", line);
+            continue;
+        }
         c = make_cell_from_line(line);
         // letter in lists ?
         if (in_lists(llst, c->lname[0]) == 0){ // no: create a new lcell and a new list, insert them in the llist

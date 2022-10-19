@@ -23,6 +23,32 @@ int64_t currentTimeMillis() {
     return res;
 }
 
+int isConsistent(char* line){
+    /*
+     * Check if the line is consistent with the format (lname,fname,zip;)
+     * Returns 1 if consistent, 0 otherwise
+     */
+    int i = 0;
+    int comma = 0;
+    int semicolon = 0;
+    if(line == NULL || line[0] == '\n' || line[0] == ',' || line[0] == ';'){ //empty line or line missing lname or infos
+        return 0;
+    }
+    while (line[i] != '\0'){
+        if (line[i] == ','){
+            if(line[i+1] == ',' || line[i+1] == ';'){ //line has an empty field
+                return 0;
+            }
+            comma++;
+        }
+        if (line[i] == ';' && comma == 2){ // line has semicolon after its two commas
+            semicolon++;
+        }
+        i++;
+    }
+    return (comma == 2) && (semicolon == 1);
+}
+
 /* Construction/Destruction
 ======================== */
 
@@ -193,6 +219,10 @@ struct list *load_file(char *file_name) {
     printf("/?/[Log/I]: Loading file...\n");
     int64_t t0 = currentTimeMillis();
     while (fgets(line, 101, f) != NULL) { // create one cell per line and add it to the list
+        if (!isConsistent(line)) {
+            printf("/!!/[Log/E]: line %d is not consistent with the needed format (lname,fname,zip;)\n", nb_elems);
+            continue;
+        }
         c = make_cell_from_line(line);
         insert(lst, c);
         nb_elems++;
